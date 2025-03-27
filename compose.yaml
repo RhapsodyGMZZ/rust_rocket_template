@@ -1,0 +1,15 @@
+services:
+  database:
+    container_name: database
+    image: mysql:8.0-bookworm
+    env_file: ./backend/.env.database
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql-db:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
+volumes:
+  mysql-db:

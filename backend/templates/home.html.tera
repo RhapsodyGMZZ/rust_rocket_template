@@ -1,0 +1,7 @@
+{% extends "base" %}
+
+{% block title %}Home Template Page{% endblock title %}
+
+{% block page_content %}PAGE CONTENT, {{test}}{% endblock page_content %}
+
+{% block footer %}FOOTER{% endblock footer %}
