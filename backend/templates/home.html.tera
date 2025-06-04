@@ -2,6 +2,16 @@
 
 {% block title %}Home Template Page{% endblock title %}
 
-{% block page_content %}PAGE CONTENT, {{test}}{% endblock page_content %}
+{% block extra_head %}
+    <link rel="stylesheet" href="/public/css/home.css">
+{% endblock extra_head %}
 
-{% block footer %}FOOTER{% endblock footer %}
+{% block page_content %}
+<div class="container">
+    <h1 class="title">Welcome to the Rust Rocket Template!</h1>
+    <p class="description">{{description}}</p>
+</div>
+<img src="/public/rocket_logo.png" alt="Rust Rocket's Logo" width="200">
+{% endblock page_content %}
+
+{% block footer %}All rights reserved to {{username}}&copy;{% endblock footer %}
