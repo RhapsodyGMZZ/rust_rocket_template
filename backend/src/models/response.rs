@@ -1,9 +1,10 @@
 use std::{collections::HashMap, io::Cursor};
 
 use rocket::{
+    Response,
     http::{ContentType, Cookie, Header, Status},
     response::{Builder, Responder},
-    serde, time, Response,
+    serde,
 };
 
 /// Custom HTTP Response object to improve our dev experience / readablity of the code  
@@ -13,12 +14,18 @@ pub struct CustomResponse {
     pub status_code: Status,
     pub content_type: ContentType,
     pub body: serde::json::Value,
-    pub cookie: Cookie<'static>,
+    pub cookie: Option<Cookie<'static>>,
 }
 
 impl Default for CustomResponse {
     fn default() -> Self {
-        Self::new(None, Status::Ok, ContentType::JSON, serde::json::json!({}), None)
+        Self::new(
+            None,
+            Status::Ok,
+            ContentType::JSON,
+            serde::json::json!({}),
+            None,
+        )
     }
 }
 
@@ -31,22 +38,13 @@ impl CustomResponse {
         body: serde::json::Value,
         cookie: Option<Cookie<'static>>,
     ) -> Self {
-        // let stringified_body: String =
-        //     serde::json::to_string(&body).expect("Can't stringify JSON body");
         if let Some(headers) = headers_map {
             Self {
                 headers,
                 status_code,
                 content_type,
                 body,
-                cookie: if cookie.is_some() {
-                    cookie.unwrap()
-                } else {
-                    //Creating and directly deleting cookie (more convenient to dev)
-                    Cookie::build(("none", "none"))
-                        .max_age(time::Duration::nanoseconds(1))
-                        .build()
-                },
+                cookie,
             }
         } else {
             Self {
@@ -54,14 +52,7 @@ impl CustomResponse {
                 status_code,
                 content_type,
                 body,
-                cookie: if cookie.is_some() {
-                    cookie.unwrap()
-                } else {
-                    //Creating and directly deleting cookie (more convenient to dev)
-                    Cookie::build(("none", "none"))
-                        .max_age(time::Duration::nanoseconds(1))
-                        .build()
-                },
+                cookie,
             }
         }
     }
@@ -128,7 +119,15 @@ impl<'r, 'a> Responder<'r, 'static> for CustomResponse {
         self.headers.iter().for_each(|(&key, &val)| {
             build.header(Header::new(key, val));
         });
-        request.cookies().add_private(self.cookie); // adding encrypted cookie to the front, only the server has access to the decrypted value
+        if self
+            .cookie
+            .clone()
+            .is_some_and(|c| request.cookies().get_private(c.name()).is_none()) // Checking if it's a nex cookie to set or just an existing cookie
+        {
+            request
+                .cookies()
+                .add_private(self.cookie.expect("No cookie to set")); // adding encrypted cookie to the front, only the server has access to the decrypted value
+        }
         build
             .header(self.content_type) // adding "Content-Type" Header
             .sized_body(
