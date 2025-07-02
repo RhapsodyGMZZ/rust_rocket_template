@@ -5,7 +5,7 @@
 
 # How to run it ?
 Just type this command : <br>
-```docker compsoe up -d``` to start the database <br>
+```docker compose up -d``` to start the database <br>
 and then type this: <br>
 ```cargo install cargo-watch --locked && cargo watch -x "run"```
 
