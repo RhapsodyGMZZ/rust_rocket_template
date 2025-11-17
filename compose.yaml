@@ -2,7 +2,7 @@ services:
   database:
     container_name: rocket_database_template
     image: mysql:8.0-bookworm
-    env_file: ./backend/.env.database
+    env_file: .env
     ports:
       - 3306:3306
     volumes:

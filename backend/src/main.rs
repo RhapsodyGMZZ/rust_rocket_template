@@ -9,14 +9,13 @@ extern crate rocket;
 #[launch]
 async fn rocket() -> _ {
     dotenvy::from_path("../.env").expect("Can't load .env file.");
-    dotenvy::from_path(".env.database").expect("Can't load .env.database file.");
 
     // Initialising database object AND applying migrations
     let db: MySqlPool = database::open()
         .await
         .unwrap_or_else(|e| panic!("Couldn't open database: {e}"));
     database::init_db().unwrap_or_else(|e| panic!("Migration could not be performed: {e}"));
-
+    
     // Building the app with the routes mounted
     rocket::build()
         .mount("/public", FileServer::from("./static"))
