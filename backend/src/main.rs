@@ -1,7 +1,7 @@
 use backend::{cors, database, routes::home::home};
 use rocket::fs::FileServer;
 use rocket_dyn_templates::Template;
-use sqlx::MySqlPool;
+use sqlx::PgPool;
 
 #[macro_use]
 extern crate rocket;
@@ -11,11 +11,11 @@ async fn rocket() -> _ {
     dotenvy::from_path("../.env").expect("Can't load .env file.");
 
     // Initialising database object AND applying migrations
-    let db: MySqlPool = database::open()
+    let db: PgPool = database::open()
         .await
         .unwrap_or_else(|e| panic!("Couldn't open database: {e}"));
     database::init_db().unwrap_or_else(|e| panic!("Migration could not be performed: {e}"));
-    
+
     // Building the app with the routes mounted
     rocket::build()
         .mount("/public", FileServer::from("./static"))

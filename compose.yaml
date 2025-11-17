@@ -1,15 +1,17 @@
 services:
   database:
     container_name: rocket_database_template
-    image: mysql:8.0-bookworm
-    env_file: .env
-    ports:
-      - 3306:3306
-    volumes:
-      - mysql-db:/var/lib/mysql
+    image: postgres:17.5-bookworm
+    env_file:
+      - .env
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      test: pg_isready -h localhost -U $$POSTGRES_USER
+      interval: 5s
       timeout: 10s
-      retries: 10
+      retries: 5
+    ports:
+      - '5432:5432'
+    volumes:
+      - pg-database:/var/lib/postgresql/data:rw
 volumes:
-  mysql-db:
+  pg-database:
