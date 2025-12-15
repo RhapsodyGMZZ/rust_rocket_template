@@ -30,10 +30,13 @@ I added the CORS header as a [Fairing](https://api.rocket.rs/master/rocket/fairi
 
 ### Database MYSQL connection
 
-The default driver is a MySQL driver. Feel free to use postgreSQL's one or another.
+The default driver is a Postgres driver. Feel free to use MYSQL's one or another.
 
 ### Migrations as 'code-first' execution
 
 At the restart of the server, the migrations unapplied are applied.
+
+### Added Handling of websockets (with a fake "chat" message handler to show how to do a SQL request when receiving a WS message)
+It run simultaneously on 7777 port. This port accepts connection to 'upgrade it' as a  websocket connection.
 
 RhapsodyGMZZ&copy;
